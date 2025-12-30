@@ -23,3 +23,5 @@ I feel like if the noise was in large chunks, or perhaps LODs,
 it would work better. Perhaps lots of polygons of color,
 when overlapping in just the right spots, will recreate the images
 properly.
+
+Perhaps randomly shaped chunks of the image could be removed to different layers, no noise applied, could work. Both only reveal the final image when the whole thing is put together. The only downside is that some of the style may seep through, depending on the size of the chunks taken
