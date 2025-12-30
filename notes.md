@@ -25,3 +25,13 @@ when overlapping in just the right spots, will recreate the images
 properly.
 
 Perhaps randomly shaped chunks of the image could be removed to different layers, no noise applied, could work. Both only reveal the final image when the whole thing is put together. The only downside is that some of the style may seep through, depending on the size of the chunks taken
+
+# Version 2.5 + 3:
+
+Can't get 2.5 to make brighter noise, it seems...
+
+And as for 3, yeah, the noise is a bit better, but still
+not good enough.
+
+The best lead I have so far is to have different layers of pure noise, and not rely on the pixels averaging well,
+but just up and change the transparency of each so it has to average well. I dunno if an AI will bother to read the alpha channels to clearly, and maybe avoiding individual-channel averages will help get a cleaner (or, well, messier) result.
