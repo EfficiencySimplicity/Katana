@@ -24,8 +24,17 @@
 
 
 <body id="body">
-    <input type="file" id="file-input" accept="image/jpeg" onchange="createImageBoxFromInputFile()"/>
-    SELECT IMAGE WAIT THEN HOVER IT FOR SCATTER EFFECT - WIGGLE MOUSE TO SCATTER
+    <!-- dunno if tidy here is necessary anymore -->
+    <input type="file" id="file-input" accept="image/jpeg" onchange="tf.tidy(createImageBoxFromInputFile)"/>
+    <select name="Blend Modes" id="blend-mode-select" onchange="tf.tidy(createImageBoxFromInputFile)">
+        <option value="screen">Screen</option>
+        <option value="multiply">Multiply</option>
+        <option value="lighten">Lighten</option>
+        <option value="darken">Darken</option>
+        <option value="plus-lighter">PlusLighter</option>
+    </select>
+    <p>SELECT IMAGE WAIT THEN HOVER IT FOR SCATTER EFFECT - WIGGLE MOUSE TO SCATTER
+    SMALL IMAGES ARE BETTER FOR SEEING ANIMATION</p>
     <!-- input field for files, selector for blend mode, and images for holding layers -->
 </body>
 

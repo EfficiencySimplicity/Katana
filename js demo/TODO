@@ -1,0 +1,3 @@
+- Scale image elements, not the actual pixel images
+- delete when new image loaded
+- blend mode selector

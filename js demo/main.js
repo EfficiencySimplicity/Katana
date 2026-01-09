@@ -4,6 +4,7 @@
 // , paper-mache, and hope. Tread carefully.
 //
 // MEMORY LEAKS TO BE FIXED LATER THIS IS PROOF OF CONCEPT
+// Memory leaks are less, at least, but still slowly exist.
 //
 // Normal mode is omitted, as it is both needlessly complex and performs worse
 // than all other modes.
@@ -28,7 +29,7 @@ function pixellate_at_depth(image, depth=1, method='screen') {
 
     if (['multiply', 'darken'].includes(method)){
         pixel_map = pixel_map.max(axis = [2,3])
-    }else if (['screen', 'lighten', 'pluslighter'].includes(method)){
+    }else if (['screen', 'lighten', 'plus-lighter'].includes(method)){
         pixel_map = pixel_map.min(axis = [2,3])
     }
 
@@ -63,10 +64,10 @@ function get_padded_image(image) {
 // these should be the easiest to translate
 
 function get_next_layer_multiply(target_map, current_map) {
-    let new_image = (target_map / (current_map+.001))
-    current_map = current_map * new_image
+    let new_image = tf.div(target_map, tf.add(current_map,.001))
+    current_map = tf.mul(current_map, new_image)
 
-    return current_map, new_image
+    return [current_map, new_image]
 }
 
 function get_next_layer_screen(target_map, current_map) {
@@ -76,9 +77,9 @@ function get_next_layer_screen(target_map, current_map) {
     return [current_map, new_image]
 }
 
-function get_next_layer_screen(target_map, current_map) {
-    let new_image = tf.sub(1,tf.div(tf.sub(1,target_map),tf.add(tf.sub(1,current_map),.001)))
-    current_map = tf.sub(1,tf.mul(tf.sub(1,current_map),tf.sub(1,new_image)))
+function get_next_layer_darken(target_map, current_map) {
+    let new_image = tf.add(tf.mul(tf.greater(current_map, target_map), target_map), tf.mul(tf.greaterEqual(target_map, current_map), 1))
+    current_map = tf.minimum(current_map, new_image)
 
     return [current_map, new_image]
 }
@@ -134,7 +135,7 @@ function generate_component_images(image, method='screen'){
             [current_map, new_image] = get_next_layer_lighten(target_map, current_map)
         } else if (method === 'darken'){
             [current_map, new_image] = get_next_layer_darken(target_map, current_map)
-        }else if (method === 'pluslighter'){
+        }else if (method === 'plus-lighter'){
             [current_map, new_image] = get_next_layer_plus_lighter(target_map, current_map)
         }
 
@@ -178,6 +179,10 @@ function createImageBoxFromLayers(layers, blendmode) {
 // function to get image array from file imput
 // https://stackoverflow.com/questions/35274934/retrieve-image-data-from-file-input-without-a-server
 function createImageBoxFromInputFile() {
+    let existingImage = document.querySelector('.image-box');
+    if (existingImage) {
+        existingImage.remove();
+    }
     var file   = document.getElementById('file-input').files[0];
     var reader = new FileReader();
 
@@ -188,8 +193,10 @@ function createImageBoxFromInputFile() {
         let img = new Image();
         img.onload = () => {
             let tensor = tf.browser.fromPixels(img);
-            console.log(tensor.shape, 'shld be 3');
-            createImageBoxFromOriginalImageArray(tensor)
+            // tf tidy turns 231 tensors into just 1. WOW
+            // and 1078395816 bytes into 9830400, 107 times less.
+            tf.tidy(() => createImageBoxFromOriginalImageArray(tensor));
+            console.log('mem:', tf.memory());
         }
         img.src = evt.target.result;
     };
@@ -210,7 +217,7 @@ function createImageBoxFromOriginalImageArray(arr) {
 
     arr = tf.div(arr, 255.0);
 
-    let blendmode = 'screen';
+    let blendmode = getCurrentBlendModeSelected();//'screen';
 
     let layers = generate_component_images(arr, blendmode)
     
@@ -248,6 +255,12 @@ function imageElementFromArray(arr) {
     img.src=c.toDataURL('image/jpeg');
     img.className = 'move-image';
     return img;
+}
+
+function getCurrentBlendModeSelected() {
+    // https://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript
+    var e = document.getElementById("blend-mode-select");
+    return e.value;
 }
 
 // // create dummy box
