@@ -55,3 +55,7 @@ We now have normal, lighten, darken, plus-lighter, multiply, and screen blend mo
 
 Although [Tensorflow.js](https://github.com/tensorflow/tfjs) seems like a good option, with full array capabilities
 [StdLib](https://github.com/stdlib-js/stdlib) seems very promising too.
+
+# Version 6:
+
+JS Demo is functional, and semi-efficient, although could stand some asynchronous processing.
