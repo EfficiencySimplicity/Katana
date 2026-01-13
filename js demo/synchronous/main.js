@@ -93,7 +93,7 @@ function generateKatanaLayers(image, method='screen'){
 
     let num_layers    = Math.ceil(Math.log2(h/2))
     let LODs          = generateLODs(padded_image, method);
-    let katana_layers = []
+    let katana_layers = [LODs[0]]
 
     // MAIN PIPELINE LOOP
     
