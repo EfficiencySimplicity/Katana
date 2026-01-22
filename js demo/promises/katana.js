@@ -76,8 +76,6 @@ function padImage(image) {
 }
 
 
-// TODO: have standards for image range, and decide: 255 or 1
-
 /**
  * Adds an alpha channel to a 3-channel image tensor
  * @param   {tf.Tensor} im            A 3-channel image tensor
@@ -128,13 +126,13 @@ function generateLODs(image, blendmode) {
  */
 function generateLODInbetween(a,b,blendmode) {return tf.tidy(() => {
     if (blendmode==='multiply') {
-        return tf.div(b, tf.add(a,.001))
+        return tf.div(b, tf.add(a, .001))
     } else if (blendmode==='screen') {
-        return tf.sub(1, tf.div(tf.sub(1, b), tf.add(tf.sub(1,a),.001)))
+        return tf.sub(1, tf.div(tf.sub(1, b), tf.add(tf.sub(1, a), .001)))
     } else if (blendmode==='darken') {
         return tf.add(tf.mul(tf.greater(a, b), b), tf.mul(tf.greaterEqual(b, a), 1))
     } else if (blendmode==='lighten') {
-        return tf.mul(tf.greater(b,a),b)
+        return tf.mul(tf.greater(b, a), b)
     } else if (blendmode==='plus-lighter') {
         return tf.sub(b, a)
     }
@@ -388,7 +386,6 @@ function createKatanaBoxFromImage(image, blendmode='screen', shuffle=true) {
  * @param   {tf.Tensor} image The image tensor you want to be placed in an <img>
  * @returns                   An <img> element containing the image tensor
  */
-
 function tensor2Img(image) {
 
     // <img> element expects an image with alpha

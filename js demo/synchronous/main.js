@@ -1,53 +1,37 @@
 //https://stackoverflow.com/questions/52059596/loading-an-image-on-web-browser-using-promise
-
 function getCurrentBlendModeSelected() {
     return document.getElementById("blend-mode-select").value;
 }
 
-// // Gets image array from file input, demo-specific.
-// // https://stackoverflow.com/questions/35274934/retrieve-image-data-from-file-input-without-a-server
-// async function createImageBoxFromInputFile() {
-//     let existingKatanaBox = document.querySelector('.katana-box');
-//     if (existingKatanaBox) {existingKatanaBox.remove();}
+function clearExistingKatanaBoxes() {
+    let existingKatanaBoxes = document.querySelectorAll('.katana-box');
+    existingKatanaBoxes.forEach((katanaBox) => katanaBox.remove());
+}
 
-//     return await imagesFromInputField(document.getElementById('file-input')).then(function (images) {
-//         console.log(images);
 
-//         images.forEach((image) => {
-//             let startTime = Date.now();
-//             tf.tidy(() => {
-//                 let body = document.getElementById('body');
-//                 body.appendChild(createKatanaBoxFromImage(image, getCurrentBlendModeSelected()));
-//             });
-//             image.dispose();
-//             console.log('Post-operation memory:', tf.memory());
-//             console.log((Date.now() - startTime) / 1000)
-//     })})
-// };
-
+// https://stackoverflow.com/questions/35274934/retrieve-image-data-from-file-input-without-a-server
 async function createImageBoxFromInputFile() {
-    let startTime = Date.now();
 
-    let existingKatanaBox = document.querySelector('.katana-box');
-    if (existingKatanaBox) {existingKatanaBox.remove();}
+    clearExistingKatanaBoxes();
 
-    let input = document.getElementById('file-input');
+    let images = await imagesFromInputField(document.getElementById('file-input'))
+    console.log('Loaded image tensors: ', images);
+    images.forEach((image) => createKatanaBoxInDocument(image));
 
-    let imageBoxPromise = imagesFromInputField(input)
-    .then((images) => {
-        
-        let promises = [];
-        images.forEach((image) => {promises.push(new Promise((resolve, reject) => {
-                let body = document.getElementById('body');
-                body.appendChild(createKatanaBoxFromImage(image, getCurrentBlendModeSelected()));
-        }))})
+};
 
-        return Promise.all(promises);
-    })
+async function createKatanaBoxInDocument(image) {
+    let t = Date.now();
+
+    tf.tidy(async () => {
+        let body = document.getElementById('body');
+        let katanaBox = await createKatanaBoxFromImage(image, getCurrentBlendModeSelected());
+        console.log(katanaBox);
+        body.appendChild(katanaBox);
+    });
     
-
-    await Promise.resolve(imageBoxPromise);
+    image.dispose();
 
     console.log('Post-operation memory:', tf.memory());
-    console.log((Date.now() - startTime) / 1000)
-};
+    console.log((Date.now() - t) / 1000)
+}
