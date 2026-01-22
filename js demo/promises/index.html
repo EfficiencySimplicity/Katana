@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+    <script defer src="katana.js"></script>
+    <script defer src="main.js"></script>
+
+    <style>
+        .katana-image {
+            transition: transform 20s ease-in-out;
+            transform: translate(0px);
+        }
+        .katana-image:hover {
+            transition: transform .5s ease-in-out;
+            transform:translate(2000px);
+        }
+    </style>
+</head>
+
+
+<body id="body">
+
+    <input type="file" id="file-input" accept="image/jpeg" onchange="createImageBoxFromInputFile()" multiple/>
+    
+    <select name="Blend Modes" id="blend-mode-select" onchange="createImageBoxFromInputFile(); console.log(tf.memory())">
+        <option value="screen">Screen</option>
+        <option value="multiply">Multiply</option>
+        <option value="lighten">Lighten</option>
+        <option value="darken">Darken</option>
+        <option value="plus-lighter">PlusLighter</option>
+    </select>
+
+    <p>SELECT IMAGE WAIT THEN HOVER IT FOR SCATTER EFFECT - WIGGLE MOUSE TO SCATTER
+    SMALL IMAGES ARE BETTER FOR SEEING ANIMATION</p>
+
+</body>
+
+
+</html>
