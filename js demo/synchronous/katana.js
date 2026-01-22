@@ -166,31 +166,30 @@ function generateLODInbetweens(LODs, blendmode='screen', disposeInputs=true){
 }
 
 
-// INBETWEENS NOT LAYERS
 /**
  * Resizes and clips inbetweens to the same shape as the original image
- * @param   {tf.Tensor}        image  The original image, used as a reference
- * @param   {Array<tf.Tensor>} layers The inbetweens to clean
- * @returns {Array<tf.Tensor>}        The cleaned layers
+ * @param   {tf.Tensor}        image      The original image, used as a reference
+ * @param   {Array<tf.Tensor>} inbetweens The inbetweens to clean
+ * @returns {Array<tf.Tensor>}            The cleaned layers
  */
-function cleanLODInbetweens(image, layers) {return tf.tidy(() => {
-    let [w,h,c]        = image.shape;
-    let padded_size    = getPaddedSize(image)
-    let cleaned_layers = []
+function cleanLODInbetweens(image, inbetweens) {return tf.tidy(() => {
+    let [w,h,c]            = image.shape;
+    let padded_size        = getPaddedSize(image)
+    let cleaned_inbetweens = []
 
-    layers.forEach((layer) => {
+    inbetweens.forEach((image) => {
 
-        let scale_factor = Math.floor(padded_size/layer.shape[0]);
-        let scaled_layer = scaleBy(layer, scale_factor);
-        let sliced_layer = scaled_layer.slice([0,0],[w, h])
+        let scale_factor = Math.floor(padded_size/image.shape[0]);
+        let scaled_image = scaleBy(image, scale_factor);
+        let sliced_image = scaled_image.slice([0,0],[w, h])
 
-        cleaned_layers.push(sliced_layer);
+        cleaned_inbetweens.push(sliced_image);
 
-        scaled_layer.dispose();
-        layer.dispose();
+        scaled_image.dispose();
+        image.dispose();
     })
 
-    return cleaned_layers;
+    return cleaned_inbetweens;
 })}
 
 
@@ -285,7 +284,7 @@ function styleKatanaImage(img, blendmode) {
  * @param {String}    blendmode The blendmode to use ('screen,'multiply','darken','lighten','plus-lighter')
  * @param {Boolean}   shuffle   Whether to shuffle sections of the layers around (highly recommended)
  */
-function createKatanaBoxFromImage(image, blendmode='screen', shuffle=true) {
+function createKatanaBoxFromImage(image, blendmode='screen', shuffles=0) {
 
     let t = Date.now();
 
@@ -307,14 +306,11 @@ function createKatanaBoxFromImage(image, blendmode='screen', shuffle=true) {
 
     console.log('AT cleaning, B4 shuffle: ', tf.memory().numTensors);
 
-    console.log('clean ended, time ', (Date.now() - t) / 1000);
-    t = Date.now();
-
-    if (shuffle) {layers = shuffleLayers(layers);}
+    layers = shuffleLayers(layers, shuffles);
+    
     console.log('AT shuffle, B4 box making: ', tf.memory().numTensors);
 
-    console.log('shuffle ended, time ', (Date.now() - t) / 1000);
-    t = Date.now();
+    console.log('Full time taken before making box: ', (Date.now() - t) / 1000);
     
     return layers2KatanaBox(layers, blendmode);
 }
@@ -340,7 +336,7 @@ function tensor2Img(image) {
     if (tensor.shape[2]==3) {tensor = addAlpha(tensor);}
     let [h,w,c] = tensor.shape;
 
-    return tensor.data().then((tensorData) => {
+    return tensor2array(tensor).then((tensorData) => {
         let imageData = new ImageData(
         Uint8ClampedArray.from(tensorData),
         w, h);
@@ -357,18 +353,26 @@ function tensor2Img(image) {
         let img = document.createElement('img')
         img.src = canvas.toDataURL('image/jpeg');
 
-        tensor.dispose();
-
         return img;
     })
+}
+
+
+function tensor2array(tensor, disposeInputs=true) {
+    return tensor.data().then((data) => {if (disposeInputs) {tensor.dispose();} return data;});
+}
+
+
+function array2tensor(array, disposeInputs=true) {
+    return tensor.data().then((data) => {if (disposeInputs) {tensor.dispose();} return data;});
 }
 
 
 // NOTE: HighDuck404 corrected 'shoild' to 'should'
 /**
  * Gets image tensors from an image <input> element
- * @param   {string}    input The input element, which should contain a jpeg..
- * @returns {tf.Tensor}       A 3-channel, 0-255 tensor of shape [h,w,c]
+ * @param   {string}    input           The input element, which should contain a jpeg..
+ * @returns {Promise<Array<tf.Tensor>>} Resolves to an array of 3-channel, 0-255 tensors of shape [h,w,c]
  */
 function imagesFromInputField(input) {
     let promises = [];
@@ -379,6 +383,11 @@ function imagesFromInputField(input) {
 }
 
 
+/**
+ * Gets an image tensor from an <input> element's file
+ * @param   {string}    file An input element's file, which should be a jpeg..
+ * @returns {tf.Tensor}      A 3-channel, 0-255 tensor of shape [h,w,c]
+ */
 function imageFromInputFile(file) {return new Promise((resolve, reject) => {
     var reader = new FileReader();
 
@@ -395,8 +404,13 @@ function imageFromInputFile(file) {return new Promise((resolve, reject) => {
 })}
 
 
-function tensorFromLoadedImage(img) {return tf.tidy(() => {
-    let pixel_values = tf.browser.fromPixels(img);
+/**
+ * Gets an image tensor from a loaded Image()
+ * @param   {string}    image A loaded Image()
+ * @returns {tf.Tensor}       A 3-channel, 0-255 tensor of shape [h,w,c]
+ */
+function tensorFromLoadedImage(image) {return tf.tidy(() => {
+    let pixel_values = tf.browser.fromPixels(image);
     return tf.div(pixel_values, 255.0);
 })}
 

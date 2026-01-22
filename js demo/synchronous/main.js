@@ -1,6 +1,10 @@
 //https://stackoverflow.com/questions/52059596/loading-an-image-on-web-browser-using-promise
-function getCurrentBlendModeSelected() {
+function getCurrentBlendMode() {
     return document.getElementById("blend-mode-select").value;
+}
+
+function getCurrentShuffleAmount() {
+    return document.getElementById("shuffle-amount-select").value;
 }
 
 function clearExistingKatanaBoxes() {
@@ -25,7 +29,7 @@ async function createKatanaBoxInDocument(image) {
 
     tf.tidy(async () => {
         let body = document.getElementById('body');
-        let katanaBox = await createKatanaBoxFromImage(image, getCurrentBlendModeSelected());
+        let katanaBox = await createKatanaBoxFromImage(image, getCurrentBlendMode(), getCurrentShuffleAmount());
         console.log(katanaBox);
         body.appendChild(katanaBox);
     });
@@ -33,5 +37,5 @@ async function createKatanaBoxInDocument(image) {
     image.dispose();
 
     console.log('Post-operation memory:', tf.memory());
-    console.log((Date.now() - t) / 1000)
+    console.log('Full operation time: ', (Date.now() - t) / 1000);
 }
