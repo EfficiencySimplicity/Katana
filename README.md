@@ -20,19 +20,19 @@ such as Glaze and Nightshade exist, but they modify the image, however impercept
 
 ## 📌 Why choose Katana?
 
-### - Katana is lightweight
+### - 🍃 Katana is lightweight
 
 Less than 500 lines of code, and much less computationally expensive than Glaze or Nightshade
 
-### - Katana is fast
+### - 💻 Katana is fast
 
 For large images, with shuffling enabled, Katana takes only a second or two to generate layers
 
-### - Katana is effective
+### - 🎯 Katana is effective
 
 Katana has the freedom to appply very destructive edits to the source image, a freedom which standard AI poison systems do not have
 
-### - Katana is versatile
+### - 🎨 Katana is versatile
 
 Katana can operate on different blend modes to more effectively obfuscate different parts of an image
 

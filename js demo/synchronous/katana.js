@@ -424,3 +424,14 @@ function tensorFromLoadedImage(image) {return tf.tidy(() => {
 
 // remove tensors after 1/2 GB
 tf.env().set("WEBGL_DELETE_TEXTURE_THRESHOLD", 500000000);
+
+// https://www.tensorflow.org/js/guide/platform_environment
+
+// In the TensorFlow Node.js backend, 'node', the TensorFlow C API is used to accelerate operations. 
+// This will use the machine's available hardware acceleration, like CUDA, if available.
+
+tf.setBackend("webgl")
+
+// tf.enableProdMode();
+
+// tf.enableDebugMode();
