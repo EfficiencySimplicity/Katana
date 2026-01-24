@@ -55,3 +55,7 @@ None of the layers are really usable until they are layered on top of each other
 This causes a massive amount of difficulty for web scrapers that intend to use the images for AI training purposes (or any other), as the scraper must be explicitly programmed to combine images in the correct way, or to screenshot the page and somehow isolate the image part. If a scraper scrapes a massive amount of these images, and the images' metadata has no information telling what images go to each other, it will be nearly impossible to reconstruct the original images again.
 
 Future versions of Katana may split the image into chunks and give each their own div, or even have heavily poisoned parts of layers that are covered up by later layers.
+
+<p align="center">
+  <img src="assets/Pipeline_Chart.svg" alt="Katana Pipeline Chart" width="600">
+</p>
