@@ -32,14 +32,15 @@ async function createKatanaBoxInDocument(image) {
     let t = Date.now();
 
     tf.tidy(async () => {
-        let body = document.getElementById('body');
+        let grid = document.getElementById('image-holder');
         let katanaBox = await createKatanaBoxFromImage(
             image,
             getCurrentBlendMode(), 
             getCurrentShuffleAmount(), 
             getCurrentLayerRatio());
+        // TODO: style the box based on its children after its children are all loaded - how to do?...
         console.log(katanaBox);
-        body.appendChild(katanaBox);
+        grid.appendChild(katanaBox);
     });
     
     image.dispose();
