@@ -26,6 +26,12 @@
     <input type="file" id="file-input" accept="image/jpeg" onchange="createImageBoxFromInputFile()" multiple/>
     <p> shuffles: <input type="number" id="shuffle-amount-select" name = 'shuffles'/></p>
 
+    <select name="Layer Ratio" id="ratio-select">
+        <option value=1>1 (1/2 scale)</option>
+        <option value=2>2 (1/4 scale)</option>
+        <option value=3>3 (1/8 scale)</option>
+    </select>
+
     <select name="Blend Modes" id="blend-mode-select" onchange="createImageBoxFromInputFile(); console.log(tf.memory())">
         <option value="screen">Screen</option>
         <option value="multiply">Multiply</option>

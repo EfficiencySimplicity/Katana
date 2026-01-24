@@ -7,6 +7,10 @@ function getCurrentShuffleAmount() {
     return document.getElementById("shuffle-amount-select").value;
 }
 
+function getCurrentLayerRatio() {
+    return +document.getElementById("ratio-select").value;
+}
+
 function clearExistingKatanaBoxes() {
     let existingKatanaBoxes = document.querySelectorAll('.katana-box');
     existingKatanaBoxes.forEach((katanaBox) => katanaBox.remove());
@@ -29,7 +33,11 @@ async function createKatanaBoxInDocument(image) {
 
     tf.tidy(async () => {
         let body = document.getElementById('body');
-        let katanaBox = await createKatanaBoxFromImage(image, getCurrentBlendMode(), getCurrentShuffleAmount());
+        let katanaBox = await createKatanaBoxFromImage(
+            image,
+            getCurrentBlendMode(), 
+            getCurrentShuffleAmount(), 
+            getCurrentLayerRatio());
         console.log(katanaBox);
         body.appendChild(katanaBox);
     });

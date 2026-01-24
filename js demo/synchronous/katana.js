@@ -44,7 +44,7 @@ function pixellate(image, depth=1, blendmode='screen') {return tf.tidy(() => {
     let d         = Math.floor(2 ** depth)
 
     // Reshape it into (d, d, chunk_size, chunk_size, 3)
-    let pixel_map = image.reshape([d, Math.floor(w/d), d, Math.floor(h/d), c])
+    let pixel_map = image.reshape([Math.floor(w/d), d, Math.floor(h/d), d, c])
     pixel_map     = tf.einsum('abcde->acbde', pixel_map);
 
     // Each function (min/max) collapses each chunk into a single value,
@@ -56,6 +56,18 @@ function pixellate(image, depth=1, blendmode='screen') {return tf.tidy(() => {
     }
 
 })}
+
+
+/**
+ * Calculates how much to scale a tensor for its shape to match another
+ * @param   {tf.Tensor} a The tensor you are goint to scale
+ * @param   {tf.Tensor} b A tensor with the target shape
+ * @returns {Number}      What A must be scaled by to be the same size as b
+ */
+function getScaleRatio(a, b) {
+    // TODO: error if not equal ratios on both sides
+    return Math.floor(b.shape[0] / a.shape[0])
+}
 
 
 /**
@@ -101,16 +113,17 @@ function addAlpha(image, disposeInputs=true) {return tf.tidy(() => {
  * so that you can get from one to the other by applying an inbetween in the correct blendmode.
  * @param   {tf.Tensor} image     The image tensor you want LODs of
  * @param   {String}    blendmode The blendmode to create the LODs for
+ * @param   {Number}    ratio     The ratio of one layer to the next, in powers of 2. Best at 2-3
  * @returns {Array}               The LODs of the image, created for the blendmode
  */
-function generateLODs(image, blendmode) {
+function generateLODs(image, blendmode, ratio=3) {
     let [w,h,c]    = image.shape;
     let num_layers = Math.ceil(Math.log2(h));
     let LODs       = [];
 
     // TODO: async this
-    for (let i=0;i<num_layers; i++) {
-        LODs.push(pixellate(image, i+1, blendmode));
+    for (let i=0; i<=num_layers; i+=ratio) {
+        LODs.unshift(pixellate(image, i, blendmode));
     }
 
     return LODs;
@@ -152,7 +165,7 @@ function generateLODInbetweens(LODs, blendmode='screen', disposeInputs=true){
     let inbetweens = [tf.clone(LODs[0])];
 
     for (let i=0; i<LODs.length - 1; i++){
-        let a = scaleBy(LODs[i]);
+        let a = scaleBy(LODs[i], getScaleRatio(LODs[i], LODs[i+1]));
         let b = LODs[i+1];
 
         inbetweens.push(generateLODInbetween(a, b, blendmode))
@@ -179,7 +192,7 @@ function cleanLODInbetweens(image, inbetweens) {return tf.tidy(() => {
 
     inbetweens.forEach((image) => {
 
-        let scale_factor = Math.floor(padded_size/image.shape[0]);
+        let scale_factor = Math.floor(padded_size/image.shape[0]); //TODO: size ratio somehow?
         let scaled_image = scaleBy(image, scale_factor);
         let sliced_image = scaled_image.slice([0,0],[w, h])
 
@@ -194,6 +207,7 @@ function cleanLODInbetweens(image, inbetweens) {return tf.tidy(() => {
 
 
 // TODO: return a cloned copy and dispose optional
+// and shuffle at a lower res, for goodness sakes.
 // avoid same name.
 // here there was a problem where it would randomly select the same layer twice, resulting im memory leakage
 
@@ -250,7 +264,7 @@ function shuffleTwoLayers(a, b) {return tf.tidy(() => {
  * @param   {String}           blendmode The blendmode to use
  * @returns 
  */
-async function layers2KatanaBox(layers, blendmode) {return tf.tidy(() => {
+function layers2KatanaBox(layers, blendmode) {
     // do  I need to tidy?!
     let katanaBox       = document.createElement('div');
     katanaBox.className = 'katana-box';
@@ -261,8 +275,11 @@ async function layers2KatanaBox(layers, blendmode) {return tf.tidy(() => {
         katanaBox.appendChild(img);
     })
 
+    // TODO: mesh this in with async and set proper size
+    // katanaBox.firstChild.style.mixBlendMode = 'normal';
+
     return katanaBox;
-})}
+}
 
 
 /**
@@ -284,7 +301,7 @@ function styleKatanaImage(img, blendmode) {
  * @param {String}    blendmode The blendmode to use ('screen,'multiply','darken','lighten','plus-lighter')
  * @param {Boolean}   shuffle   Whether to shuffle sections of the layers around (highly recommended)
  */
-function createKatanaBoxFromImage(image, blendmode='screen', shuffles=0) {
+function createKatanaBoxFromImage(image, blendmode='screen', shuffles=0, layer_ratio=1) {
 
     let t = Date.now();
 
@@ -294,7 +311,7 @@ function createKatanaBoxFromImage(image, blendmode='screen', shuffles=0) {
 
     console.log('AT padding, B4 LODs: ', tf.memory().numTensors);
 
-    let LODs = generateLODs(padded_image, blendmode);
+    let LODs = generateLODs(padded_image, blendmode, layer_ratio);
 
     console.log('AT LODs, B4 IBTs: ', tf.memory().numTensors);
 
