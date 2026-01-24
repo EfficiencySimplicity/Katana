@@ -34,3 +34,9 @@ _Big cleanup, async, and speed improvements_
 - Updated README.md
 - Cleaned memory leaks
 - Made code async
+
+## 1.1.1 - 2026-01-24
+
+### Added
+
+- Added webp support

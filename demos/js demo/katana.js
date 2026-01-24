@@ -388,7 +388,7 @@ function array2tensor(array, disposeInputs=true) {
 // NOTE: HighDuck404 corrected 'shoild' to 'should'
 /**
  * Gets image tensors from an image <input> element
- * @param   {string}    input           The input element, which should contain a jpeg..
+ * @param   {string}    input           The input element, which should contain a jpeg or webp..
  * @returns {Promise<Array<tf.Tensor>>} Resolves to an array of 3-channel, 0-255 tensors of shape [h,w,c]
  */
 function imagesFromInputField(input) {
@@ -402,7 +402,7 @@ function imagesFromInputField(input) {
 
 /**
  * Gets an image tensor from an <input> element's file
- * @param   {string}    file An input element's file, which should be a jpeg..
+ * @param   {string}    file An input element's file, which should be a jpeg or webp..
  * @returns {tf.Tensor}      A 3-channel, 0-255 tensor of shape [h,w,c]
  */
 function imageFromInputFile(file) {return new Promise((resolve, reject) => {
