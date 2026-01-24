@@ -175,4 +175,4 @@ cython_debug/
 
 # People may not want their art submissions public.
 
-python demo/art submissions/
+demos/art submissions/

@@ -1,0 +1,10 @@
+- "Why Choose Katana" section in README ✅
+- Pipeline graph in README
+- Fan logos folder ✅
+- Possible batch layer processing in images (later)
+- Consistent naming and structure ✅ (good enough, can improve later)
+- Add that different blend modes good for different things; such as multiply is bad for black text. ✅
+- structure demo folder, with src folder alongside ✅??
+- Changelog!
+- Parity in the JS demos ✅ (removed for now)
+- improve speed and profile (tricky with the speedup tf js gives)

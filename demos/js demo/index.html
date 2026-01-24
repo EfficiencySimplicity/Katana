@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+    <script defer src="katana.js"></script>
+    <script defer src="main.js"></script>
+
+    <style>
+        .katana-image {
+            transition: transform 20s ease-in-out;
+            transform: translate(0px);
+        }
+
+        .katana-image:hover {
+            transition: transform .5s ease-in-out;
+            transform:translate(2000px);
+        }
+
+        #image-holder {
+            display: grid;
+            grid-auto-rows: 600px;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <input type="file" id="file-input" accept="image/jpeg" onchange="createImageBoxFromInputFile()" multiple/>
+    <p> shuffles: <input type="number" id="shuffle-amount-select" name = 'shuffles'/></p>
+
+    <select name="Layer Ratio" id="ratio-select" onchange="createImageBoxFromInputFile()"">
+        <option value=1>1 (1/2 scale)</option>
+        <option value=2>2 (1/4 scale)</option>
+        <option value=3>3 (1/8 scale)</option>
+    </select>
+
+    <select name="Blend Modes" id="blend-mode-select" onchange="createImageBoxFromInputFile(); console.log(tf.memory())">
+        <option value="screen">Screen</option>
+        <option value="multiply">Multiply</option>
+        <option value="lighten">Lighten</option>
+        <option value="darken">Darken</option>
+        <option value="plus-lighter">PlusLighter</option>
+    </select>
+
+    <p> SELECT IMAGE WAIT THEN HOVER IT FOR SCATTER EFFECT </p>
+    <p> - WIGGLE MOUSE TO SCATTER </p>
+    <p> SMALL IMAGES ARE BETTER FOR SEEING ANIMATION</p>
+    <p> IMAGES ARE NOT SIZED RIGHT AND MAY OVERLAP IF TOO TALL</p>
+    <p> UPLOAD MULTIPLE IMAGES AT ONCE TO TEST SPEED </p>
+    <p> ADJUST SHUFFLE AMOUNT AND SCALE FOR BETTER PERFORMANCE</p>
+    <p> 1/4 SCALE IS BEST, AND 1/8 SEEMS BETTER IN SOME CASES</p>
+    <p> OPEN INSPECTOR TO SEE KATANA LAYERS</p>
+
+    <div id = 'image-holder'>
+
+    </div>
+
+</body>
+
+
+</html>
