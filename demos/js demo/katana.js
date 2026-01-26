@@ -248,13 +248,10 @@ function shuffleTwoLayers(a, b) {return tf.tidy(() => {
     let sliceH = Math.floor(h/2);
     let sliceW = Math.floor(w/2);
 
-    let sliceA = tf.clone(a.slice([sliceY, sliceX],[sliceH, sliceW]));
-    let sliceB = tf.clone(b.slice([sliceY, sliceX],[sliceH, sliceW]));
+    let updateShape = tf.fill([sliceH, sliceW, c], false, 'bool');
+    let updateMap   = updateShape.pad([[sliceY, h-(sliceY+sliceH)],[sliceX, w-(sliceX+sliceW)],[0,0]],true);
 
-    let updateMapA = sliceB.pad([[sliceY, h-(sliceY+sliceH)],[sliceX, w-(sliceX+sliceW)],[0,0]],-1);
-    let updateMapB = sliceA.pad([[sliceY, h-(sliceY+sliceH)],[sliceX, w-(sliceX+sliceW)],[0,0]],-1);
-
-    return [a.where(tf.equal(updateMapA, -1), updateMapA), b.where(tf.equal(updateMapB, -1), updateMapB)];
+    return [a.where(updateMap, b), b.where(updateMap, a)];
 })}
 
 

@@ -40,3 +40,13 @@ _Big cleanup, async, and speed improvements_
 ### Added
 
 - Added webp support
+
+## 1.1.2 - 2026-01-26
+
+### Added
+
+- Added (unintentionally) png, avif support
+
+### Changed
+
+- Implemented slightly more efficient shuffling method
