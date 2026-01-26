@@ -8,3 +8,4 @@
 - Changelog! ✅
 - Parity in the JS demos ✅ (removed for now)
 - improve speed and profile (tricky with the speedup tf js gives)
+- Get better consistent built in CSS rules applied
